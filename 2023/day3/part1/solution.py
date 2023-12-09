@@ -1,6 +1,7 @@
 
 with open("puzzle.txt", "r", encoding="utf-8") as f:
     lines = f.readlines()
+    lines = lines[:4]
 
 
 def checkForSymbols(lines, linePos, charPos, symbols):
@@ -48,10 +49,31 @@ def checkForSymbols(lines, linePos, charPos, symbols):
             if lines[linePos + 1][charPos - 1] in symbols: return True
 
 def firstDigit(line, charPos):
-    # preceeding char
-    precCharIdx = charPos -1
+    # previous char
+    prevCharIdx = charPos -1
 
-    if precCharIdx >= 0:
+    if prevCharIdx >= 0:
+        prevChar = line[prevCharIdx]
+        
+        # preceeding char is a digit
+        if prevChar.isdigit():
+            firstDigit(line, prevCharIdx)
+        else:
+            return prevCharIdx
+    else:
+        # we are at the first char in line
+        char = line[charPos]
+        if char.isdigit():
+            return charPos
+        else:
+            return charPos + 1
+        
+def lastDigit(line, charPos):
+     # preceeding char
+    precCharIdx = charPos + 1
+    lineLength = len(line) - 1
+
+    if precCharIdx <= lineLength: # precChar exisits
         precChar = line[precCharIdx]
         
         # preceeding char is a digit
@@ -60,31 +82,43 @@ def firstDigit(line, charPos):
         else:
             return precCharIdx
     else:
-        # we are at the first char in line
+        # we are at the end of line
         char = line[charPos]
         if char.isdigit():
             return charPos
         else:
-            return charPos + 1
+            return charPos - 1
 
-def parseNumber(line, lineNumb, charPos):
+def parseNumber(line, charPos):
     # first digit
-    fstDigit = firstDigit()
+    lstDigitPos = firstDigit(line, charPos)
+    lastDigitPos = lastDigit(line, charPos)
 
+    if lstDigitPos == None or lastDigitPos == None:
+        print("\n", lstDigitPos, charPos, lastDigitPos)
+    numb = str(line[lstDigitPos:lastDigitPos+1])
+
+    return numb, lastDigitPos
 
 """
 For every digit we have to check if its souronded by symbol
 """
 symbols = ['*', '+', '=', '%', '-', '#', '@', '/', '&', '$']
+lineLength = len(lines[0]) - 1
 
 linePos = 0
 for  line in lines:
-
+    print(line)
     charPos = 0
-    for char in line:
+    while charPos <= lineLength:
+        char = line[charPos]
+        print(char, end="")
         if char.isdigit():
             if checkForSymbols(lines, linePos, charPos, symbols):
-                parseNumber()
+                numb, lastDigitPos = parseNumber(line, charPos)
+                print(numb)
+                charPos = lastDigitPos + 1
+                continue
+
         charPos += 1
-    
     linePos += 1
