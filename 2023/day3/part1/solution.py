@@ -47,6 +47,30 @@ def checkForSymbols(lines, linePos, charPos, symbols):
         if preceedingLineExists:
             if lines[linePos + 1][charPos - 1] in symbols: return True
 
+def firstDigit(line, charPos):
+    # preceeding char
+    precCharIdx = charPos -1
+
+    if precCharIdx >= 0:
+        precChar = line[precCharIdx]
+        
+        # preceeding char is a digit
+        if precChar.isdigit():
+            firstDigit(line, precCharIdx)
+        else:
+            return precCharIdx
+    else:
+        # we are at the first char in line
+        char = line[charPos]
+        if char.isdigit():
+            return charPos
+        else:
+            return charPos + 1
+
+def parseNumber(line, lineNumb, charPos):
+    # first digit
+    fstDigit = firstDigit()
+
 
 """
 For every digit we have to check if its souronded by symbol
@@ -60,7 +84,7 @@ for  line in lines:
     for char in line:
         if char.isdigit():
             if checkForSymbols(lines, linePos, charPos, symbols):
-
+                parseNumber()
         charPos += 1
     
     linePos += 1
