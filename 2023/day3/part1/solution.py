@@ -88,6 +88,10 @@ def lastDigit(line, charPos):
     
     recursive func: at the end it should return 6 in this example 
     """
+    # guard statment if char at curr pos not digit
+    if not line[charPos].isdigit():
+        return -1
+    
     # preceeding char
     precCharIdx = charPos + 1
     lineLength = len(line) - 1
@@ -97,9 +101,10 @@ def lastDigit(line, charPos):
         
         # preceeding char is a digit
         if precChar.isdigit():
-            firstDigit(line, precCharIdx)
+            return lastDigit(line, precCharIdx)
         else:
-            return precCharIdx
+            # following char (precChar not digit) -> means charPos must be lastDigit 
+            return charPos
     else:
         # we are at the end of line
         char = line[charPos]
