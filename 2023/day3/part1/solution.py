@@ -1,9 +1,4 @@
 
-with open("puzzle.txt", "r", encoding="utf-8") as f:
-    lines = f.readlines()
-    lines = lines[:4]
-
-
 def checkForSymbols(lines, linePos, charPos, symbols):
     """
     Check if given position is surrounded by a symbol
@@ -49,6 +44,20 @@ def checkForSymbols(lines, linePos, charPos, symbols):
             if lines[linePos + 1][charPos - 1] in symbols: return True
 
 def firstDigit(line, charPos):
+    """
+    returns the first digit of number at char pos:
+    line = '134.....4556.....7587'
+                      ^
+                      |
+                    char pos
+    
+    recursive func: at the end it should return 4 in this example 
+    """
+
+    # guard statment return if given position is not a digit
+    if not line[charPos].isdigit():
+        return -1
+
     # previous char
     prevCharIdx = charPos -1
 
@@ -57,9 +66,10 @@ def firstDigit(line, charPos):
         
         # preceeding char is a digit
         if prevChar.isdigit():
-            firstDigit(line, prevCharIdx)
+            return firstDigit(line, prevCharIdx)
         else:
-            return prevCharIdx
+            # previour Char is not digit -> means at charPos must be first digit
+            return charPos
     else:
         # we are at the first char in line
         char = line[charPos]
@@ -69,7 +79,16 @@ def firstDigit(line, charPos):
             return charPos + 1
         
 def lastDigit(line, charPos):
-     # preceeding char
+    """
+    returns the last digit of number at char pos:
+    line = '134.....4556.....7587'
+                      ^
+                      |
+                    char pos
+    
+    recursive func: at the end it should return 6 in this example 
+    """
+    # preceeding char
     precCharIdx = charPos + 1
     lineLength = len(line) - 1
 
@@ -100,25 +119,34 @@ def parseNumber(line, charPos):
 
     return numb, lastDigitPos
 
-"""
-For every digit we have to check if its souronded by symbol
-"""
-symbols = ['*', '+', '=', '%', '-', '#', '@', '/', '&', '$']
-lineLength = len(lines[0]) - 1
+if __name__ == '__main__':
+    """
+    For every digit we have to check if its souronded by symbol
+    """
+    with open("puzzle.txt", "r", encoding="utf-8") as f:
+        lines = f.readlines()
+        lines = lines[:4]
+    
+    symbols = ['*', '+', '=', '%', '-', '#', '@', '/', '&', '$']
+    
 
-linePos = 0
-for  line in lines:
-    print(line)
-    charPos = 0
-    while charPos <= lineLength:
-        char = line[charPos]
-        print(char, end="")
-        if char.isdigit():
-            if checkForSymbols(lines, linePos, charPos, symbols):
-                numb, lastDigitPos = parseNumber(line, charPos)
-                print(numb)
-                charPos = lastDigitPos + 1
-                continue
+    linePos = 0
+    for  line in lines:
+        if line.find("\n"):
+            line = line[:-2]
+        
+        lineLength = len(line) - 1
+        print(line)
+        charPos = 0
+        while charPos <= lineLength:
+            char = line[charPos]
+            print(char, end="")
+            if char.isdigit():
+                if checkForSymbols(lines, linePos, charPos, symbols):
+                    numb, lastDigitPos = parseNumber(line, charPos)
+                    print(numb)
+                    charPos = lastDigitPos + 1
+                    continue
 
-        charPos += 1
-    linePos += 1
+            charPos += 1
+        linePos += 1
