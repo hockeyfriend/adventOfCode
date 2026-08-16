@@ -14,10 +14,13 @@ def getGearNumbers(lines, xIdx, yIdx):
     idxHits = set()
     gearNumbers = []
 
-    for i in [1, -1]:
-        for k in [1, -1]:
-            x = xIdx + i
-            y = yIdx + k
+    for i in [1, 0, -1]:
+        for k in [1, 0, -1]:
+            if i == 0 and k == 0:
+                continue
+
+            x = xIdx + k
+            y = yIdx + i
 
             if (x,y) in idxHits:
                 continue
@@ -61,7 +64,7 @@ def getGearNumbers(lines, xIdx, yIdx):
 
 def calcGearRatio(lines, x, y):
     gearNumbers = getGearNumbers(lines, x,y)
-    
+
     if len(gearNumbers) <= 1:
         return 0
     
