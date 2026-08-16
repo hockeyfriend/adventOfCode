@@ -84,10 +84,10 @@ def main():
         searchIdx = 0
 
         while True:
-            fstSymbolIdx = line[searchIdx:].find(symbol)
+            fstSymbolIdx = line.find(symbol, searchIdx)
             
             if fstSymbolIdx >= 0:
-                searchIdx += fstSymbolIdx + 1
+                searchIdx = fstSymbolIdx + 1
                 gearRatio = calcGearRatio(lines, fstSymbolIdx, lineIndex)
                 sum += gearRatio
             else:
