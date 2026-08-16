@@ -1,24 +1,99 @@
-def get_advc_file_content(filename):
-    with open(filename, 'r') as f:
-        content = f.read().splitlines()
+import os
+
+def checkPos(lines, x, y):
+    if x < 0 or y < 0 or y >= len(lines) or x >= len(lines[0]):
+        return None
+
+    char = lines[y][x]
+    if char.isdigit():
+        return int(char)
+    else:
+        return None
+
+def getGearNumbers(lines, xIdx, yIdx):
+    idxHits = set()
+    gearNumbers = []
+
+    for i in [1, -1]:
+        for k in [1, -1]:
+            x = xIdx + i
+            y = yIdx + k
+
+            if (x,y) in idxHits:
+                continue
+
+            if checkPos(lines, x, y) is not None:
+                idxHits.add((x, y))
+                centralDigit = lines[y][x]
+                
+                gearNumber = ""   
+                xForward = x
+
+                while True:
+                    xForward -= 1
+                    if(xForward == -1):
+                        break
+
+                    if lines[y][xForward].isdigit():
+                        idxHits.add((xForward,y))
+                        gearNumber = lines[y][xForward] + gearNumber
+                    else:
+                        break
+                
+                gearNumber += centralDigit
+
+                xBackward = x
+
+                while True:
+                    xBackward += 1
+                    if(xBackward == len(lines[y])):
+                        break
+
+                    if lines[y][xBackward].isdigit():
+                        idxHits.add((xBackward, y))
+                        gearNumber += lines[y][xBackward]
+                    else:
+                        break
+                
+                gearNumbers.append(int(gearNumber))
+
+    return gearNumbers
+
+def calcGearRatio(lines, x, y):
+    gearNumbers = getGearNumbers(lines, x,y)
     
-    return content
-
-def find_all(p, s):
-    '''Yields all the positions of the patter p in the string s'''
-    i = s.find(p)
-    while i != -1:
-        yield i
-        i = s.find(p, i+1) # i+1 is the new start value
-        
-lines = get_advc_file_content('puzzle.txt')
-
-for line in lines:
-    # Try to find all * symbol
-    indx = line.find('*')
+    if len(gearNumbers) <= 1:
+        return 0
     
-    if indx == -1: # no symbol found -> skip line
-        continue
+    prod = 1
+    for num in gearNumbers:
+        prod *= num
+    return prod
 
-    for char in line:
-        
+def main():
+    p = os.path.join(os.path.dirname(__file__), "puzzle.txt")
+
+    with open(p, "r", encoding="utf-8") as file:
+        lines = file.read().splitlines()
+
+    symbol = "*"
+    sum = 0
+    lineIndex = 0
+
+    for line in lines:
+        searchIdx = 0
+
+        while True:
+            fstSymbolIdx = line[searchIdx:].find(symbol)
+            
+            if fstSymbolIdx >= 0:
+                searchIdx += fstSymbolIdx + 1
+                gearRatio = calcGearRatio(lines, fstSymbolIdx, lineIndex)
+                sum += gearRatio
+            else:
+                break
+        lineIndex += 1
+    print(sum)
+
+if __name__ == "__main__":
+    main()
