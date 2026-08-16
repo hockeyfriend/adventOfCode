@@ -1,5 +1,9 @@
+import os
+
 def main():
-    with open("puzzle.txt", "r", encoding="utf-8") as file:
+    p = os.path.join(os.path.dirname(__file__), "puzzle.txt")
+
+    with open(p, "r", encoding="utf-8") as file:
         lines = file.read().splitlines()
 
 
